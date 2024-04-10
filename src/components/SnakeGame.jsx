@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./SnakeGame.css";
 const numRows = window.innerWidth <= 768 ? 16 : 20;
-const numCols = window.innerWidth <= 768 ? 16 : 20;
+const numCols = window.innerWidth <= 768 ? 24 : 20;
 const Direction = {
   UP: "UP",
   DOWN: "DOWN",
@@ -23,7 +23,7 @@ const initialDirection = Direction.RIGHT;
 
 const SnakeGame = () => {
   const [snake, setSnake] = useState(initialSnake);
-  const [levelTime, setLevelTime] = useState(150);
+  const [levelTime, setLevelTime] = useState(200);
   const [direction, setDirection] = useState(initialDirection);
   const [food, setFood] = useState(getRandomCoord());
   const [score, setScore] = useState(0);
@@ -147,7 +147,7 @@ const SnakeGame = () => {
         setLevelTime(50);
         break;
       default:
-        setLevelTime(150);
+        setLevelTime(200);
         break;
     }
   };
@@ -209,7 +209,7 @@ const SnakeGame = () => {
           <button
             className="up"
             onClick={() => setDirection(Direction.UP)}
-            disabled={gameOver.gameEnd}
+            disabled={gameOver.gameEnd || direction === "DOWN"}
           >
             Move up
           </button>
@@ -217,14 +217,14 @@ const SnakeGame = () => {
             <button
               className="left"
               onClick={() => setDirection(Direction.LEFT)}
-              disabled={gameOver.gameEnd}
+              disabled={gameOver.gameEnd || direction === "RIGHT"}
             >
               Move left
             </button>
             <button
               className="right"
               onClick={() => setDirection(Direction.RIGHT)}
-              disabled={gameOver.gameEnd}
+              disabled={gameOver.gameEnd || direction === "LEFT"}
             >
               Move right
             </button>
@@ -232,7 +232,7 @@ const SnakeGame = () => {
           <button
             className="down"
             onClick={() => setDirection(Direction.DOWN)}
-            disabled={gameOver.gameEnd}
+            disabled={gameOver.gameEnd || direction === "UP"}
           >
             Move down
           </button>
