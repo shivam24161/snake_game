@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./SnakeGame.css";
-const numRows = window.innerWidth <= 768 ? 16:20;
-const numCols = window.innerWidth <= 768 ? 16:20;;
+const numRows = window.innerWidth <= 768 ? 16 : 20;
+const numCols = window.innerWidth <= 768 ? 16 : 20;
 const Direction = {
   UP: "UP",
   DOWN: "DOWN",
@@ -32,41 +32,6 @@ const SnakeGame = () => {
     gameEnd: true,
   });
   const [paused, setPaused] = useState(false);
-  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
-  const gameBoardRef = useRef(null);
-
-  const handleTouchStart = (event) => {
-    setTouchStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
-  };
-
-  const handleTouchMove = (event) => {
-    const touchX = event.touches[0].clientX;
-    const touchY = event.touches[0].clientY;
-    const deltaX = touchX - touchStart.x;
-    const deltaY = touchY - touchStart.y;
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      if (deltaX > 0) {
-        setDirection("RIGHT");
-      } else {
-        setDirection("LEFT");
-      }
-    } else {
-      if (deltaY > 0) {
-        setDirection("DOWN");
-      } else {
-        setDirection("UP");
-      }
-    }
-  };
-  useEffect(() => {
-    const board = gameBoardRef.current;
-    board.addEventListener("touchstart", handleTouchStart);
-    board.addEventListener("touchmove", handleTouchMove);
-    return () => {
-      board.removeEventListener("touchstart", handleTouchStart);
-      board.removeEventListener("touchmove", handleTouchMove);
-    };
-  }, []);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
@@ -151,7 +116,7 @@ const SnakeGame = () => {
         }
         setSnake(newSnake);
       }
-    }, 1000);
+    }, levelTime);
 
     return () => {
       clearInterval(moveSnake);
@@ -213,32 +178,68 @@ const SnakeGame = () => {
           </button>
         )}
       </div>
-      <div
-       ref={gameBoardRef}
-        className={`${
-          gameOver.gameEnd && gameOver.intialStart === false
-            ? "game-board game-over-overlay"
-            : "game-board"
-        }`}
-      >
-        {Array.from({ length: numRows }, (_, rowIndex) => (
-          <div key={rowIndex} className="row">
-            {Array.from({ length: numCols }, (_, colIndex) => {
-              const isSnake = snake.some(
-                (segment) => segment.x === colIndex && segment.y === rowIndex
-              );
-              const isFood = food.x === colIndex && food.y === rowIndex;
-              return (
-                <div
-                  key={`${colIndex}-${rowIndex}`}
-                  className={`cell ${isSnake ? "snake" : ""} ${
-                    isFood ? "food" : ""
-                  }`}
-                ></div>
-              );
-            })}
-          </div>
-        ))}
+      <div className="board-navigation">
+        <div
+          className={`${
+            gameOver.gameEnd && gameOver.intialStart === false
+              ? "game-board game-over-overlay"
+              : "game-board"
+          }`}
+        >
+          {Array.from({ length: numRows }, (_, rowIndex) => (
+            <div key={rowIndex} className="row">
+              {Array.from({ length: numCols }, (_, colIndex) => {
+                const isSnake = snake.some(
+                  (segment) => segment.x === colIndex && segment.y === rowIndex
+                );
+                const isFood = food.x === colIndex && food.y === rowIndex;
+                return (
+                  <div
+                    key={`${colIndex}-${rowIndex}`}
+                    className={`cell ${isSnake ? "snake" : ""} ${
+                      isFood ? "food" : ""
+                    }`}
+                  ></div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+        <div className="user-navigation">
+          <button
+            className="up"
+            onClick={() => setDirection(Direction.UP)}
+            disabled={gameOver.gameEnd}
+          >
+            Move up
+          </button>
+          <span>
+            <button
+              className="left"
+              onClick={() => setDirection(Direction.LEFT)}
+              disabled={gameOver.gameEnd}
+            >
+              Move left
+            </button>
+            <button
+              className="right"
+              onClick={() => setDirection(Direction.RIGHT)}
+              disabled={gameOver.gameEnd}
+            >
+              Move right
+            </button>
+          </span>
+          <button
+            className="down"
+            onClick={() => setDirection(Direction.DOWN)}
+            disabled={gameOver.gameEnd}
+          >
+            Move down
+          </button>
+          <span className="note">
+            Note: You can also play with keyboard arrow keys.
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -1,11 +1,6 @@
 body {
-  max-width: 458px;
+  max-width: 991px;
   margin: 0 auto;
-}
-@media screen and (max-width:420px){
-  body {
-    max-width: 350px;
-  }
 }
 .select-game-level {
   padding-top: 20px;
@@ -14,8 +9,12 @@ body {
 .user-score {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 300px;
+  padding: 10px 0;
+}
+.user-score h3 {
+  margin: 0;
+  padding: 0;
 }
 .game-board {
   display: inline-block;
@@ -85,4 +84,69 @@ body {
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+.board-navigation {
+  display: flex;
+  gap: 20px;
+}
+.user-navigation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.user-navigation button {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+}
+.user-navigation button:not(:disabled):hover {
+  background-color: rgb(232, 189, 145);
+  cursor: pointer !important;
+}
+.user-navigation button:disabled{
+  border: 1px solid #d8d1d1;
+}
+.note {
+  margin-top: 12px;
+  font-weight: 500;
+  font-size: 16px;
+  white-space: pre;
+}
+@media screen and (max-width:420px){
+  body {
+    max-width: 380px;
+  }
+  .user-navigation button {
+    margin: 4px;
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  .select-game-level {
+    padding-top: 8px;
+  }
+  .select-game-level select {
+    padding: 4px 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  .note {
+    display: none;
+  }
+  .user-score {
+    gap: 100px;
+    justify-content: space-between;
+  }
+}
+@media screen and (max-width:768px){
+  .user-score {
+   gap: 100px;
+  }
+  .board-navigation {
+    gap: 4px;
+    flex-direction: column;
+  }
 }
