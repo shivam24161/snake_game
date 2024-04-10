@@ -1,29 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./SnakeGame.css";
-
 const numRows = window.innerWidth <= 768 ? 16:20;
 const numCols = window.innerWidth <= 768 ? 16:20;;
-
 const Direction = {
   UP: "UP",
   DOWN: "DOWN",
   LEFT: "LEFT",
   RIGHT: "RIGHT",
 };
-
 const getRandomCoord = () => {
   return {
     x: Math.floor(Math.random() * numCols),
     y: Math.floor(Math.random() * numRows),
   };
 };
-
 const initialSnake = [
   { x: 10, y: 10 },
   { x: 10, y: 11 },
   { x: 10, y: 12 },
 ];
-
 const initialDirection = Direction.RIGHT;
 
 const SnakeGame = () => {
@@ -37,6 +32,41 @@ const SnakeGame = () => {
     gameEnd: true,
   });
   const [paused, setPaused] = useState(false);
+  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
+  const gameBoardRef = useRef(null);
+
+  const handleTouchStart = (event) => {
+    setTouchStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
+  };
+
+  const handleTouchMove = (event) => {
+    const touchX = event.touches[0].clientX;
+    const touchY = event.touches[0].clientY;
+    const deltaX = touchX - touchStart.x;
+    const deltaY = touchY - touchStart.y;
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX > 0) {
+        setDirection("RIGHT");
+      } else {
+        setDirection("LEFT");
+      }
+    } else {
+      if (deltaY > 0) {
+        setDirection("DOWN");
+      } else {
+        setDirection("UP");
+      }
+    }
+  };
+  useEffect(() => {
+    const board = gameBoardRef.current;
+    board.addEventListener("touchstart", handleTouchStart);
+    board.addEventListener("touchmove", handleTouchMove);
+    return () => {
+      board.removeEventListener("touchstart", handleTouchStart);
+      board.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, []);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
@@ -62,30 +92,9 @@ const SnakeGame = () => {
         }
       }
     };
-    const handleTouchMove = (event) => {
-      const touchX = event.touches[0].clientX;
-      const touchY = event.touches[0].clientY;
-      const deltaX = touchX - event.targetTouches[0].clientX;
-      const deltaY = touchY - event.targetTouches[0].clientY;
-      if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        if (deltaX > 0 && direction !== Direction.LEFT) {
-          setDirection(Direction.RIGHT);
-        } else if (deltaX < 0 && direction !== Direction.RIGHT) {
-          setDirection(Direction.LEFT);
-        }
-      } else {
-        if (deltaY > 0 && direction !== Direction.UP) {
-          setDirection(Direction.DOWN);
-        } else if (deltaY < 0 && direction !== Direction.DOWN) {
-          setDirection(Direction.UP);
-        }
-      }
-    };
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
     window.addEventListener("keydown", handleKeyPress);
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
-      window.removeEventListener("touchmove", handleTouchMove);
     };
   }, [direction, gameOver, paused]);
 
@@ -142,7 +151,7 @@ const SnakeGame = () => {
         }
         setSnake(newSnake);
       }
-    }, levelTime);
+    }, 1000);
 
     return () => {
       clearInterval(moveSnake);
@@ -205,6 +214,7 @@ const SnakeGame = () => {
         )}
       </div>
       <div
+       ref={gameBoardRef}
         className={`${
           gameOver.gameEnd && gameOver.intialStart === false
             ? "game-board game-over-overlay"
